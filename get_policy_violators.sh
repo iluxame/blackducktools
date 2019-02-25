@@ -14,7 +14,7 @@
 #
 
 HUBURL="https://hubtesting.blackducksoftware.com"
-APICODE="NzU1MDJmYjUtM2RjZC00ZjBiLTk5MWMtNTYyMGZkMDEyM2UzOjdkZmQxZTBhLTY0MzAtNDFhMC04MzYwLWE4OTMxZTI3OTgxNg=="
+APICODE=""
 
 TEMPFILE=/tmp/bd$$
 OUTFILE=policies_versions.csv
@@ -40,6 +40,11 @@ then
 	error $OUTFILE exists already - please delete or use option -f
 fi
 
+if [ -z "$APICODE" ]
+then
+	error "Please set the API code and BD Server URL"
+fi
+
 POLICYSTRING=`echo $* | sed -e 's/ /%20/g'`
 if [ ! -z "$POLICYSTRING" ]
 then
@@ -49,12 +54,12 @@ else
 	POLQUERY=
 fi
 
-echo Getting Auth Token ...
+echo "Getting Auth Token from $HUBURL ..."
 curl -X POST --header "Authorization: token $APICODE" --header "Accept:application/json" $HUBURL/api/tokens/authenticate > $TEMPFILE 2>/dev/null
 
 TOKEN=`jq -r .bearerToken $TEMPFILE`
 
-echo Getting list of policies ...
+#echo Getting list of policies ...
 #curl -X GET --header "Authorization: Bearer $TOKEN" "https://hubtesting.blackducksoftware.com/api/search/components?q=name:$COMPONENT" > $TEMPFILE 2>/dev/null
 curl -X GET --header "Authorization: Bearer $TOKEN" "$HUBURL/api/policy-rules$POLQUERY" > $TEMPFILE 2>/dev/null
 if [ ! -f $TEMPFILE ]
@@ -66,6 +71,8 @@ COUNT=`jq -r .totalCount $TEMPFILE`
 if [ "$COUNT" = "0" ]
 then
 	error No policies returned
+else
+	echo "$COUNT Policies Returned"
 fi
 
 #POLICIESJSON="`jq '[.items[]|{name: .name, href: ._meta.href}]' $TEMPFILE`"
