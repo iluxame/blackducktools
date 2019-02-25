@@ -10,7 +10,7 @@
 #
 
 HUBURL="https://hubtesting.blackducksoftware.com"
-APICODE="NzU1MDJmYjUtM2RjZC00ZjBiLTk5MWMtNTYyMGZkMDEyM2UzOjdkZmQxZTBhLTY0MzAtNDFhMC04MzYwLWE4OTMxZTI3OTgxNg=="
+APICODE=""
 
 TEMPFILE=/tmp/bd1$$
 
@@ -27,6 +27,11 @@ end () {
 if [ $# -eq 0 ]
 then
 	error Please specify a component string for matching
+fi
+
+if [ -z "$APICODE" ]
+then
+	error "Please set the API code and BD Server URL"
 fi
 
 COMPONENT=`echo $* | sed -e 's/ /%20/g'`
