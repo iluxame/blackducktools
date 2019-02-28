@@ -1,4 +1,4 @@
-# blackducktools
+# Example Black Duck API Scripts
 ## get_components.sh
 
 Script to search the Black Duck KB for components matching string. 
